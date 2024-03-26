@@ -1,0 +1,77 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class PowerOfTwoMaxHeap {
+    private List<Integer> heap;
+    private int degree;
+
+    public PowerOfTwoMaxHeap(int degree) {
+        this.degree = degree;
+        this.heap = new ArrayList<>();
+    }
+
+    public void insert(int value) {
+        heap.add(value);
+        heapifyUp(heap.size() - 1);
+    }
+
+    public int popMax() {
+        if (heap.isEmpty()) {
+            throw new IllegalStateException("Heap is empty");
+        }
+
+        int max = heap.get(0);
+        int last = heap.remove(heap.size() - 1);
+        if (!heap.isEmpty()) {
+            heap.set(0, last);
+            heapifyDown(0);
+        }
+        return max;
+    }
+
+    private void heapifyUp(int index) {
+        int parent = (index - 1) / degree;
+        while (index > 0 && heap.get(index) > heap.get(parent)) {
+            swap(index, parent);
+            index = parent;
+            parent = (index - 1) / degree;
+        }
+    }
+
+    private void heapifyDown(int index) {
+        int largest = index;
+        while (true) {
+            int startChild = degree * index + 1;
+            int endChild = Math.min(startChild + degree, heap.size());
+            for (int i = startChild; i < endChild; i++) {
+                if (heap.get(i) > heap.get(largest)) {
+                    largest = i;
+                }
+            }
+            if (largest == index) {
+                break;
+            }
+            swap(index, largest);
+            index = largest;
+        }
+    }
+
+    private void swap(int i, int j) {
+        int temp = heap.get(i);
+        heap.set(i, heap.get(j));
+        heap.set(j, temp);
+    }
+
+    public static void main(String[] args) {
+        PowerOfTwoMaxHeap heap = new PowerOfTwoMaxHeap(2); // For example, a degree of 2
+        heap.insert(5);
+        heap.insert(10);
+        heap.insert(3);
+        heap.insert(8);
+
+        System.out.println(heap.popMax()); // Output: 10
+        System.out.println(heap.popMax()); // Output: 8
+        System.out.println(heap.popMax()); // Output: 5
+        System.out.println(heap.popMax()); // Output: 3
+    }
+}
